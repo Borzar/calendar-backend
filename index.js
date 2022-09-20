@@ -1,12 +1,14 @@
 const express = require('express')
 require('dotenv').config()
-
-console.log(process.env)
+const { dbConnection } = require('./database/config')
 
 // Crear el servidor de express
 const app = express()
 
-// Directorio publico 
+// Base de datos
+dbConnection()
+
+// Directorio publico
 app.use(express.static('public'))
 
 // Lectura y parseo del body
@@ -18,6 +20,5 @@ app.use('/api/auth', require('./routes/auth'))
 
 // Escuchar peticion
 app.listen(process.env.PORT, () => {
-	console.log(`servidor corriendo en puerto ${process.env.PORT}`)
+  console.log(`servidor corriendo en puerto ${process.env.PORT}`)
 })
-
