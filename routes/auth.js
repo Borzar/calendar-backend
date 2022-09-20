@@ -11,6 +11,7 @@ const router = Router()
 const { check } = require('express-validator')
 
 const { createUser, loginUser, renewToken } = require('../controllers/auth')
+const {validarCampos} = require('../middlewares/validar-campos')
 
 router.post(
 	'/new',
@@ -18,6 +19,7 @@ router.post(
 		check('name', 'El nombre es obligario').not().isEmpty(),
 		check('email', 'El email es obligario').isEmail(), 
 		check('password', 'El password debe ser de 6 caracteres').isLength({ min: 6 }), 
+		validarCampos
 	],
 	createUser)
 
@@ -26,6 +28,7 @@ router.post('/',
 	[// middlewares
 		check('email', 'El email es obligario').isEmail(), 
 		check('password', 'El password debe ser de 6 caracteres').isLength({ min: 6 }), 
+		validarCampos
 	],
 	loginUser )
 
