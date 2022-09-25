@@ -1,47 +1,68 @@
-const { response } = require('express')
-const { validationResult } = require('express-validator')
+const { response } = require('express');
+const Usuario = require('../models/Usuario');
+const bcrypt = require('bcryptjs')
 
 // req: lo que la persona nececita
 // res: lo que nosotros respondemos
 
 // POST
-const createUser = (req, res = response) => {
+const createUser = async (req, res = response) => {
+	const { email, password } = req.body;
 
-	const { name, email, password } = req.body
-	
-	res.status(201).json({
-		"ok": true,
-		msg: 'registro',
-		name,
-		email,
-		password
-	})
-}
+	try {
+		let usuario = await Usuario.findOne({ email });
+
+		if (usuario) {
+			return res.status(400).json({
+				ok: false,
+				msg: 'Un usuario con ese correo',
+			});
+		}
+
+		usuario = new Usuario(req.body);
+		
+		// Encriptar contraseña
+		const salt = bcrypt.genSaltSync()	
+		usuario.password = bcrypt.hashSync( password, salt )
+
+		await usuario.save();
+
+		res.status(201).json({
+			ok: true,
+			uid: usuario.id,
+			name: usuario.name,
+		});
+	} catch (error) {
+		console.log(error);
+		res.status(500).json({
+			ok: false,
+			msg: 'Por favor hable con el administrador',
+		});
+	}
+};
 
 // POST
 const loginUser = (req, res = response) => {
-
-	const { email, password } = req.body
+	const { email, password } = req.body;
 
 	res.json({
-		"ok": true,
+		ok: true,
 		msg: 'login',
 		email,
-		password
-	})
-}
+		password,
+	});
+};
 
 // GET
 const renewToken = (req, res = response) => {
 	res.json({
-		"ok": true,
-		msg: 'renew'
-	})
-}
+		ok: true,
+		msg: 'renew',
+	});
+};
 
 module.exports = {
 	createUser,
 	loginUser,
-	renewToken
-
-} 
+	renewToken,
+};
