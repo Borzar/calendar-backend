@@ -1,3 +1,3 @@
-# Bavkend MERN - Calendar
+# Backend MERN - Calendar
 
 
